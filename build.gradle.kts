@@ -16,6 +16,20 @@ repositories {
 //    maven("https://raw.github.com/morpher-ru/morpher-ws3-java-client/mvn-repo")
 }
 
+
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+}
+
+java{
+    withSourcesJar()
+}
+
 dependencies {
     testImplementation(kotlin("test"))
     implementation(libs.jetbrains.annotations)
