@@ -18,4 +18,11 @@ class PetrovichTest {
         assertEquals("девочке", Petrovich.morphNoun("девочке", case = Case.NOMINATIVUS))
     }
 
+    @Test
+    fun morpherClient() {
+        val client = ru.morpher.ws3.ClientBuilder().build()
+        var result = client.russian().declension("гипер")
+        println(result)
+    }
+
 }

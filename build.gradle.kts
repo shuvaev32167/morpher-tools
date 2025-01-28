@@ -4,6 +4,7 @@ plugins {
     `java-library`
      `maven-publish`
     id("org.gradlex.extra-java-module-info") version "1.9"
+    application
 }
 
 group = "ru.shuvaev.morpher"
@@ -13,7 +14,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven("https://jitpack.io")
-//    maven("https://raw.github.com/morpher-ru/morpher-ws3-java-client/mvn-repo")
+    maven("https://raw.github.com/morpher-ru/morpher-ws3-java-client/mvn-repo")
 }
 
 
@@ -34,8 +35,17 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation(libs.jetbrains.annotations)
     implementation(libs.petrovich4j)
+
+    implementation(libs.morpher.client)
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.annotations)
+    implementation(libs.jackson.core)
+    implementation("commons-codec:commons-codec:1.18.0")
+
+    implementation("org.xerial:sqlite-jdbc:3.48.0.0")
+
+
 //    implementation(libs.aot)
-//    implementation("ru.morpher:ws3.client:1.0-SNAPSHOT")
 }
 
 tasks.test {
@@ -45,10 +55,10 @@ kotlin {
     jvmToolchain(21)
 }
 
-//application{
-//    mainModule = "ru.shuvaev.morpher.tools"
-//    mainClass = "ru.shuvaev.morpher.tools.MainKt"
-//}
+application {
+    mainModule = "ru.shuvaev.morpher.tools"
+    mainClass = "ru.shuvaev.morpher.tools.MainKt"
+}
 
 tasks.compileJava {
     options.encoding = "UTF-8"
@@ -61,6 +71,13 @@ tasks.compileTestJava {
 extraJavaModuleInfo {
     module("com.github.petrovich4j:petrovich4j", "petrovich4j"){
         exports("com.github.petrovich4j")
+    }
+    module("ru.morpher:ws3.client", "morpher.w3.client") {
+        exports("ru.morpher.ws3")
+        exports("ru.morpher.ws3.russian")
+
+        requires("com.fasterxml.jackson.core")
+        requires("com.fasterxml.jackson.databind")
     }
 //    automaticModule("com.github.petrovich4j:petrovich4j", "petrovich4j")
 //    automaticModule("com.github.demidko:aot", "aot")

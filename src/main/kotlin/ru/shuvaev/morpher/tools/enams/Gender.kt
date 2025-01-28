@@ -1,5 +1,13 @@
 package ru.shuvaev.morpher.tools.enams
 
+/** Пол слова */
 enum class Gender {
-    MALE, FEMALE, MEDIUM
+    /** Мужской */
+    MALE,
+
+    /** Женский */
+    FEMALE,
+
+    /** Средний */
+    MEDIUM
 }

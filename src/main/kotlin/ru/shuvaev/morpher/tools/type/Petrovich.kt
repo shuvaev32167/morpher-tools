@@ -4,11 +4,18 @@ import com.github.petrovich4j.NameType
 import com.github.petrovich4j.Petrovich
 import ru.shuvaev.morpher.tools.enams.Case
 import ru.shuvaev.morpher.tools.enams.Gender
+import ru.shuvaev.morpher.tools.enams.Numeration
 
-object Petrovich : MorpherType {
+internal object Petrovich : MorpherType {
     @JvmStatic
     private val PETROVICH: Petrovich = Petrovich()
-    override fun morphNoun(word: String, gender: Gender, case: Case, autoGender: Boolean): String =
+    override fun morphNoun(
+        word: String,
+        gender: Gender,
+        case: Case,
+        numeration: Numeration,
+        autoGender: Boolean
+    ): String =
         convertCase(case)?.let {
             PETROVICH.say(word, NameType.FirstName, autoGender(word, gender, autoGender), it)
         } ?: word
