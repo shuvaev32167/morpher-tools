@@ -7,7 +7,7 @@ import java.sql.DriverManager
 import java.sql.Statement
 
 
-object SqlLiteCache : Cache {
+internal object SqlLiteCache : Cache {
     override fun getMorphedNoun(word: String): MorphologyDto? {
         try {
             return baseDbAction { statement ->

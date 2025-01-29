@@ -7,12 +7,12 @@ fun main() {
     val client = ru.morpher.ws3.ClientBuilder().build()
     var result = client.russian().declension("гипер")
     MorphologyDto.fromWs3Morpher(result)?.let {
-        SqlLiteCache.saveMorphed(it)
+        SqlLiteCache.saveMorphedNoun(it)
         println(it)
     }
 
     MorphologyDto.fromWs3Morpher(result)?.let {
-        SqlLiteCache.saveMorphed(it)
+        SqlLiteCache.saveMorphedNoun(it)
         println(it)
     }
 }
