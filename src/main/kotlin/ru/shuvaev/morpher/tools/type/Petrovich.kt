@@ -20,6 +20,14 @@ internal object Petrovich : MorpherType {
             PETROVICH.say(word, NameType.FirstName, autoGender(word, gender, autoGender), it)
         } ?: word
 
+    override fun morphGender(
+        word: String,
+        gender: Gender,
+        numeration: Numeration
+    ): String {
+        TODO("Not yet implemented")
+    }
+
     private fun autoGender(word: String, gender: Gender, autoGender: Boolean): com.github.petrovich4j.Gender {
         return if (autoGender) {
             PETROVICH.gender(word, convertGender(gender))

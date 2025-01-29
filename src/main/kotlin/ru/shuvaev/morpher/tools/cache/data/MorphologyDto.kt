@@ -19,6 +19,7 @@ data class MorphologyDto(
     val pluralPraepositionalis: String,
 ) {
     companion object {
+        @JvmStatic
         fun fromWs3Morpher(data: DeclensionResult?): MorphologyDto? {
             if (data == null) return null
 

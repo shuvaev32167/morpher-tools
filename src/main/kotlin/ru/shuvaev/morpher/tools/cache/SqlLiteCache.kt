@@ -1,5 +1,6 @@
 package ru.shuvaev.morpher.tools.cache
 
+import ru.shuvaev.morpher.tools.cache.data.MorphGenderDto
 import ru.shuvaev.morpher.tools.cache.data.MorphologyDto
 import java.sql.Connection
 import java.sql.DriverManager
@@ -7,11 +8,10 @@ import java.sql.Statement
 
 
 object SqlLiteCache : Cache {
-    override fun getMorphed(word: String): MorphologyDto? {
+    override fun getMorphedNoun(word: String): MorphologyDto? {
         try {
             return baseDbAction { statement ->
-                createTable(statement)
-                val rs = statement.executeQuery("select * from word where nominativus='${word}';")
+                val rs = statement.executeQuery("select * from noun where nominativus='${word}';")
                 return@baseDbAction if (rs.next()) {
                     MorphologyDto(
                         rs.getString("nominativus"),
@@ -32,37 +32,77 @@ object SqlLiteCache : Cache {
                 }
             }
         } catch (e: Exception) {
-            println(e)
+            error(e)
         }
         return null
     }
 
-    override fun saveMorphed(morphologyDto: MorphologyDto): MorphologyDto {
+    override fun saveMorphedNoun(data: MorphologyDto): MorphologyDto {
         try {
             return baseDbAction { statement ->
                 statement.executeUpdate(
-                    "insert into word (nominativus, genitivus, dativus, accusativus," +
+                    "insert into noun (nominativus, genitivus, dativus, accusativus," +
                             "instrumentalis, praepositionalis, plural_nominativus, plural_genitivus, " +
                             "plural_dativus, plural_accusativus, plural_instrumentalis, plural_praepositionalistext) " +
-                            "values ('${morphologyDto.nominativus}','${morphologyDto.genitivus}','${morphologyDto.dativus}'," +
-                            "'${morphologyDto.accusativus}','${morphologyDto.instrumentalis}','${morphologyDto.praepositionalis}'," +
-                            "'${morphologyDto.pluralNominativus}','${morphologyDto.pluralGenitivus}'," +
-                            "'${morphologyDto.pluralDativus}','${morphologyDto.pluralAccusativus}'," +
-                            "'${morphologyDto.pluralInstrumentalis}','${morphologyDto.pluralPraepositionalis}') " +
+                            "values ('${data.nominativus}','${data.genitivus}','${data.dativus}'," +
+                            "'${data.accusativus}','${data.instrumentalis}','${data.praepositionalis}'," +
+                            "'${data.pluralNominativus}','${data.pluralGenitivus}'," +
+                            "'${data.pluralDativus}','${data.pluralAccusativus}'," +
+                            "'${data.pluralInstrumentalis}','${data.pluralPraepositionalis}') " +
                             "on conflict do nothing;"
                 )
-                return@baseDbAction morphologyDto
-            } ?: morphologyDto
+                return@baseDbAction data
+            } ?: data
         } catch (e: Exception) {
-            println(e)
+            error(e)
         }
-        return morphologyDto
+        return data
     }
 
-    private fun createTable(statement: Statement) {
+    override fun getMorphedGender(word: String): MorphGenderDto? {
+        try {
+            return baseDbAction {
+                val rs = it.executeQuery(
+                    "select * from adjective_genders where masculine='${word}' or feminine='${word}' " +
+                            "or neuter='${word}';"
+                )
+                return@baseDbAction if (rs.next()) {
+                    MorphGenderDto(
+                        rs.getString("masculine"),
+                        rs.getString("feminine"),
+                        rs.getString("neuter"),
+                        rs.getString("plural")
+                    )
+                } else {
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            error(e)
+        }
+        return null
+    }
+
+    override fun saveMorphedGender(data: MorphGenderDto): MorphGenderDto {
+        try {
+            return baseDbAction {
+                it.executeUpdate(
+                    "insert into adjective_genders (masculine, feminine, neuter, plural) " +
+                            "values ('${data.masculine}', '${data.feminine}', '${data.neuter}', '${data.plural}') " +
+                            "on conflict do nothing;"
+                )
+                return@baseDbAction data
+            } ?: data
+        } catch (e: Exception) {
+            error(e)
+        }
+        return data
+    }
+
+    private fun createTables(statement: Statement) {
         statement.queryTimeout = 30
         statement.executeUpdate(
-            "create table if not exists word(" +
+            "create table if not exists noun(" +
                     "nominativus text primary key, " +
                     "genitivus text, " +
                     "dativus text, " +
@@ -76,16 +116,34 @@ object SqlLiteCache : Cache {
                     "plural_instrumentalis text, " +
                     "plural_praepositionalistext);"
         )
+
+        statement.executeUpdate(
+            "create table if not exists adjective_genders(" +
+                    "masculine text primary key," +
+                    "feminine text, " +
+                    "neuter text," +
+                    "plural text, " +
+                    "unique(feminine), " +
+                    "unique(neuter));"
+        )
+    }
+
+    private val connection: Connection? = DriverManager.getConnection("jdbc:sqlite:morpherCache.db")
+
+    init {
+        connection?.use { connection ->
+            connection.createStatement().use { statement ->
+                createTables(statement)
+            }
+        }
     }
 
     private fun <T> baseDbAction(block: (statement: Statement) -> T): T? {
-        val connection: Connection? = DriverManager.getConnection("jdbc:sqlite:morpherCache.db")
         if (connection == null) {
             return null
         }
         return connection.use { connection ->
             connection.createStatement().use { statement ->
-                createTable(statement)
                 return block(statement)
             }
         }

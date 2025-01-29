@@ -1,6 +1,7 @@
 package ru.shuvaev.morpher.tools.type
 
 import ru.shuvaev.morpher.tools.cache.SqlLiteCache
+import ru.shuvaev.morpher.tools.cache.data.MorphGenderDto
 import ru.shuvaev.morpher.tools.cache.data.MorphologyDto
 import ru.shuvaev.morpher.tools.enams.Case
 import ru.shuvaev.morpher.tools.enams.Gender
@@ -16,12 +17,38 @@ internal object MorpherW3 : MorpherType {
         numeration: Numeration,
         autoGender: Boolean
     ): String {
-        val morphed = SqlLiteCache.getMorphed(word)
-        return morphed?.getMorph(case, numeration)
-            ?: (RUSSIAN_CLIENT.declension(word).let {
-                MorphologyDto.fromWs3Morpher(it)?.let {
-                    SqlLiteCache.saveMorphed(it)
+        try {
+            val morphed = SqlLiteCache.getMorphedNoun(word)
+            return morphed?.getMorph(case, numeration)
+                ?: (RUSSIAN_CLIENT.declension(word).let {
+                    MorphologyDto.fromWs3Morpher(it)?.let {
+                        SqlLiteCache.saveMorphedNoun(it)
+                    }
+                }?.getMorph(case, numeration) ?: word)
+        } catch (e: Exception) {
+            error(e)
+        }
+        return word
+    }
+
+    override fun morphGender(
+        word: String,
+        gender: Gender,
+        numeration: Numeration
+    ): String {
+        val morphed = SqlLiteCache.getMorphedGender(word)
+        if (morphed != null) {
+            return morphed.getMorph(gender, numeration)
+        }
+        try {
+            return RUSSIAN_CLIENT.adjectiveGenders(word).let {
+                MorphGenderDto.fromWs3Morpher(word, it)?.let {
+                    SqlLiteCache.saveMorphedGender(it)
                 }
-            }?.getMorph(case, numeration) ?: word)
+            }?.getMorph(gender, numeration) ?: word
+        } catch (e: Exception) {
+            error(e)
+        }
+        return word
     }
 }

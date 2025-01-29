@@ -35,4 +35,8 @@ interface MorpherType {
      */
     fun morphNoun(word: String, case: Case = Case.DATIVUS, numeration: Numeration = Numeration.SINGLE): String =
         morphNoun(word = word, case = case, numeration = numeration, autoGender = true)
+
+    fun morphGender(word: String, gender: Gender, numeration: Numeration): String
+    fun morphGender(word: String, gender: Gender): String =
+        morphGender(word = word, gender = gender, numeration = Numeration.SINGLE)
 }

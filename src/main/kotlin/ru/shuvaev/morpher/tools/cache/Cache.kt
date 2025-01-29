@@ -1,8 +1,12 @@
 package ru.shuvaev.morpher.tools.cache
 
+import ru.shuvaev.morpher.tools.cache.data.MorphGenderDto
 import ru.shuvaev.morpher.tools.cache.data.MorphologyDto
 
 interface Cache {
-    fun getMorphed(word: String): MorphologyDto?
-    fun saveMorphed(morphologyDto: MorphologyDto): MorphologyDto
+    fun getMorphedNoun(word: String): MorphologyDto?
+    fun saveMorphedNoun(data: MorphologyDto): MorphologyDto
+
+    fun getMorphedGender(word: String): MorphGenderDto?
+    fun saveMorphedGender(data: MorphGenderDto): MorphGenderDto
 }
