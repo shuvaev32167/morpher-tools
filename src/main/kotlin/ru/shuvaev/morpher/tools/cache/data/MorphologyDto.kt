@@ -11,12 +11,12 @@ data class MorphologyDto(
     val accusativus: String,
     val instrumentalis: String,
     val praepositionalis: String,
-    val pluralNominativus: String,
-    val pluralGenitivus: String,
-    val pluralDativus: String,
-    val pluralAccusativus: String,
-    val pluralInstrumentalis: String,
-    val pluralPraepositionalis: String,
+    val pluralNominativus: String?,
+    val pluralGenitivus: String?,
+    val pluralDativus: String?,
+    val pluralAccusativus: String?,
+    val pluralInstrumentalis: String?,
+    val pluralPraepositionalis: String?,
 ) {
     companion object {
         @JvmStatic
@@ -25,8 +25,8 @@ data class MorphologyDto(
 
             return MorphologyDto(
                 data.nominative, data.genitive, data.dative, data.accusative, data.instrumental,
-                data.prepositional, data.plural.nominative, data.plural.genitive, data.plural.dative,
-                data.plural.accusative, data.plural.instrumental, data.plural.prepositional
+                data.prepositional, data.plural?.nominative, data.plural?.genitive, data.plural?.dative,
+                data.plural?.accusative, data.plural?.instrumental, data.plural?.prepositional
             )
         }
     }
@@ -49,7 +49,7 @@ data class MorphologyDto(
                 Case.ACCUSATIVUS -> pluralAccusativus
                 Case.INSTRUMENTALIS -> pluralInstrumentalis
                 Case.PRAEPOSITIONALIS -> pluralPraepositionalis
-            }
+            } ?: getMorph(case, Numeration.SINGLE)
         }
     }
 }

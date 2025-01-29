@@ -26,7 +26,7 @@ internal object MorpherW3 : MorpherType {
                     }
                 }?.getMorph(case, numeration) ?: word)
         } catch (e: Exception) {
-            error(e)
+            println(e)
         }
         return word
     }
@@ -47,7 +47,7 @@ internal object MorpherW3 : MorpherType {
                 }
             }?.getMorph(gender, numeration) ?: word
         } catch (e: Exception) {
-            error(e)
+            println(e)
         }
         return word
     }

@@ -32,7 +32,7 @@ internal object SqlLiteCache : Cache {
                 }
             }
         } catch (e: Exception) {
-            error(e)
+            println(e)
         }
         return null
     }
@@ -46,15 +46,15 @@ internal object SqlLiteCache : Cache {
                             "plural_dativus, plural_accusativus, plural_instrumentalis, plural_praepositionalistext) " +
                             "values ('${data.nominativus}','${data.genitivus}','${data.dativus}'," +
                             "'${data.accusativus}','${data.instrumentalis}','${data.praepositionalis}'," +
-                            "'${data.pluralNominativus}','${data.pluralGenitivus}'," +
-                            "'${data.pluralDativus}','${data.pluralAccusativus}'," +
-                            "'${data.pluralInstrumentalis}','${data.pluralPraepositionalis}') " +
+                            "${stringOrNull(data.pluralNominativus)},${stringOrNull(data.pluralGenitivus)}," +
+                            "${stringOrNull(data.pluralDativus)},${stringOrNull(data.pluralAccusativus)}," +
+                            "${stringOrNull(data.pluralInstrumentalis)},${stringOrNull(data.pluralPraepositionalis)}) " +
                             "on conflict do nothing;"
                 )
                 return@baseDbAction data
             } ?: data
         } catch (e: Exception) {
-            error(e)
+            println(e)
         }
         return data
     }
@@ -78,7 +78,7 @@ internal object SqlLiteCache : Cache {
                 }
             }
         } catch (e: Exception) {
-            error(e)
+            println(e)
         }
         return null
     }
@@ -94,7 +94,7 @@ internal object SqlLiteCache : Cache {
                 return@baseDbAction data
             } ?: data
         } catch (e: Exception) {
-            error(e)
+            println(e)
         }
         return data
     }
@@ -103,12 +103,12 @@ internal object SqlLiteCache : Cache {
         statement.queryTimeout = 30
         statement.executeUpdate(
             "create table if not exists noun(" +
-                    "nominativus text primary key, " +
-                    "genitivus text, " +
-                    "dativus text, " +
-                    "accusativus text, " +
-                    "instrumentalis text, " +
-                    "praepositionalis text, " +
+                    "nominativus text primary key not null, " +
+                    "genitivus text not null, " +
+                    "dativus text not null, " +
+                    "accusativus text not null, " +
+                    "instrumentalis text not null, " +
+                    "praepositionalis text not null, " +
                     "plural_nominativus text, " +
                     "plural_genitivus text, " +
                     "plural_dativus text, " +
@@ -147,5 +147,12 @@ internal object SqlLiteCache : Cache {
                 return block(statement)
             }
         }
+    }
+
+    private fun stringOrNull(string: String?): String? {
+        return if (string == null) {
+            null
+        } else
+            "'$string'"
     }
 }
