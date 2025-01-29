@@ -18,13 +18,19 @@ internal object MorpherW3 : MorpherType {
         autoGender: Boolean
     ): String {
         try {
-            val morphed = SqlLiteCache.getMorphedNoun(word)
-            return morphed?.getMorph(case, numeration)
-                ?: (RUSSIAN_CLIENT.declension(word).let {
-                    MorphologyDto.fromWs3Morpher(it)?.let {
-                        SqlLiteCache.saveMorphedNoun(it)
-                    }
-                }?.getMorph(case, numeration) ?: word)
+            var result = SqlLiteCache.getMorphedNoun(word)?.getMorph(case, numeration)
+            if (result != null) {
+                return result
+            }
+            result = RUSSIAN_CLIENT.declension(word).let {
+                MorphologyDto.fromWs3Morpher(it)?.let {
+                    SqlLiteCache.saveMorphedNoun(it)
+                }
+            }?.getMorph(case, numeration)
+            if (result != null) {
+                return result
+            }
+            return word
         } catch (e: Exception) {
             println(e)
         }
@@ -36,16 +42,20 @@ internal object MorpherW3 : MorpherType {
         gender: Gender,
         numeration: Numeration
     ): String {
-        val morphed = SqlLiteCache.getMorphedGender(word)
-        if (morphed != null) {
-            return morphed.getMorph(gender, numeration)
-        }
         try {
-            return RUSSIAN_CLIENT.adjectiveGenders(word).let {
+            var result = SqlLiteCache.getMorphedGender(word)?.getMorph(gender, numeration)
+            if (result != null) {
+                return result
+            }
+            result = RUSSIAN_CLIENT.adjectiveGenders(word).let {
                 MorphGenderDto.fromWs3Morpher(word, it)?.let {
                     SqlLiteCache.saveMorphedGender(it)
                 }
-            }?.getMorph(gender, numeration) ?: word
+            }?.getMorph(gender, numeration)
+            if (result != null) {
+                return result
+            }
+            return word
         } catch (e: Exception) {
             println(e)
         }

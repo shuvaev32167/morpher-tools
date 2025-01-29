@@ -25,8 +25,13 @@ data class MorphologyDto(
 
             return MorphologyDto(
                 data.nominative, data.genitive, data.dative, data.accusative, data.instrumental,
-                data.prepositional, data.plural?.nominative, data.plural?.genitive, data.plural?.dative,
-                data.plural?.accusative, data.plural?.instrumental, data.plural?.prepositional
+                data.prepositional,
+                data.plural?.nominative ?: data.nominative,
+                data.plural?.genitive ?: data.genitive,
+                data.plural?.dative ?: data.dative,
+                data.plural?.accusative ?: data.accusative,
+                data.plural?.instrumental ?: data.instrumental,
+                data.plural?.prepositional ?: data.prepositional,
             )
         }
     }

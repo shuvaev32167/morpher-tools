@@ -128,9 +128,11 @@ internal object SqlLiteCache : Cache {
         )
     }
 
+    @JvmStatic
+    private val connection: Connection = DriverManager.getConnection("jdbc:sqlite:morpherCache.db")
+
     init {
-        val connection: Connection? = DriverManager.getConnection("jdbc:sqlite:morpherCache.db")
-        connection?.use { connection ->
+        connection.let { connection ->
             connection.createStatement().use { statement ->
                 createTables(statement)
             }
@@ -138,11 +140,7 @@ internal object SqlLiteCache : Cache {
     }
 
     private fun <T> baseDbAction(block: (statement: Statement) -> T): T? {
-        val connection: Connection? = DriverManager.getConnection("jdbc:sqlite:morpherCache.db")
-        if (connection == null) {
-            return null
-        }
-        return connection.use { connection ->
+        return connection.let { connection ->
             connection.createStatement().use { statement ->
                 return block(statement)
             }

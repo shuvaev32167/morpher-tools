@@ -25,7 +25,9 @@ class PetrovichTest {
     @Disabled
     fun morpherClient() {
         val client = ru.morpher.ws3.ClientBuilder().build()
-        var result = client.russian().declension("гипер")
+        val russian = client.russian()
+        SqlLiteCache.getMorphedNoun("гипер")
+        var result = russian.declension("гипер")
         println(result)
     }
 
