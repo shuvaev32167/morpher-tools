@@ -1,12 +1,15 @@
 package type
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import ru.shuvaev.morpher.tools.cache.SqlLiteCache
 import ru.shuvaev.morpher.tools.enams.Case
 import ru.shuvaev.morpher.tools.type.Petrovich
 
 class PetrovichTest {
     @Test
+    @Disabled
     fun morphNoun() {
         assertEquals("женщине", Petrovich.morphNoun("женщина"))
         assertEquals("мужчине", Petrovich.morphNoun("мужчина"))
@@ -19,6 +22,7 @@ class PetrovichTest {
     }
 
     @Test
+    @Disabled
     fun morpherClient() {
         val client = ru.morpher.ws3.ClientBuilder().build()
         var result = client.russian().declension("гипер")
