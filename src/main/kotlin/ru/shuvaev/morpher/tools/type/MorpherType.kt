@@ -40,6 +40,30 @@ interface MorpherType {
     fun morphGender(word: String, gender: Gender): String =
         morphGender(word = word, gender = gender, numeration = Numeration.SINGLE)
 
+    fun morphFirstName(
+        firstName: String,
+        case: Case,
+        gender: Gender = Gender.MALE,
+        numeration: Numeration = Numeration.SINGLE
+    ): String {
+        return morphNoun(firstName, gender, case, numeration, false)
+    }
+
+    fun morphLastName(
+        lastName: String,
+        case: Case,
+        gender: Gender = Gender.MALE,
+        numeration: Numeration = Numeration.SINGLE
+    ): String {
+        return morphNoun(lastName, gender, case, numeration, false)
+    }
+
+    /**
+     * Преобразование мужской фамилии в женскую
+     *
+     * @param surname мужская фамилия
+     * @return [surname] в женском варианте
+     */
     fun convertSurnameToFemale(surname: String): String {
         val parts = surname.split("-") // Проверка на двойные фамилии
         val convertedParts = parts.map { processSingleSurname(it) }

@@ -20,6 +20,30 @@ internal object Petrovich : MorpherType {
             PETROVICH.say(word, NameType.FirstName, autoGender(word, gender, autoGender), it)
         } ?: word
 
+    override fun morphFirstName(
+        firstName: String,
+        case: Case,
+        gender: Gender,
+        numeration: Numeration
+    ): String {
+        if (case == Case.NOMINATIVUS) {
+            return firstName
+        }
+        return PETROVICH.say(firstName, NameType.FirstName, convertGender(gender), convertCase(case))
+    }
+
+    override fun morphLastName(
+        lastName: String,
+        case: Case,
+        gender: Gender,
+        numeration: Numeration
+    ): String {
+        if (case == Case.NOMINATIVUS) {
+            return lastName
+        }
+        return PETROVICH.say(lastName, NameType.LastName, convertGender(gender), convertCase(case))
+    }
+
     override fun morphGender(
         word: String,
         gender: Gender,
@@ -43,6 +67,7 @@ internal object Petrovich : MorpherType {
             Gender.MEDIUM -> com.github.petrovich4j.Gender.Both
         }
     }
+
     private fun convertCase(case: Case): com.github.petrovich4j.Case? {
         return when (case) {
             Case.NOMINATIVUS -> null
