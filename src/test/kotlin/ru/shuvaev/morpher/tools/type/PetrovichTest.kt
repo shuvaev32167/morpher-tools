@@ -6,10 +6,11 @@ import org.junit.jupiter.api.Test
 import ru.morpher.ws3.ClientBuilder
 import ru.shuvaev.morpher.tools.cache.SqlLiteCache
 import ru.shuvaev.morpher.tools.enams.Case
+import ru.shuvaev.morpher.tools.enams.Gender
+import ru.shuvaev.morpher.tools.enams.Numeration
 
 class PetrovichTest {
     @Test
-    @Disabled
     fun morphNoun() {
         Assertions.assertEquals("женщине", Petrovich.morphNoun("женщина"))
         Assertions.assertEquals("мужчине", Petrovich.morphNoun("мужчина"))
@@ -19,6 +20,15 @@ class PetrovichTest {
         Assertions.assertEquals("трапу", Petrovich.morphNoun("трап"))
         Assertions.assertEquals("томбою", Petrovich.morphNoun("томбой"))
         Assertions.assertEquals("девочке", Petrovich.morphNoun("девочке", case = Case.NOMINATIVUS))
+    }
+
+    @Test
+    fun morphFirstName() {
+        Assertions.assertEquals("тебе", Petrovich.morphFirstName("ты", Case.DATIVUS, Gender.MALE, Numeration.SINGLE))
+        Assertions.assertEquals(
+            "Нами",
+            Petrovich.morphFirstName("Мы", Case.INSTRUMENTALIS, Gender.MALE, Numeration.SINGLE)
+        )
     }
 
     @Test

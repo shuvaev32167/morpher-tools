@@ -1,7 +1,9 @@
 package ru.shuvaev.morpher.tools.type
 
+import ru.morpher.ws3.russian.DeclensionFlag
 import ru.shuvaev.morpher.tools.cache.SqlLiteCache
 import ru.shuvaev.morpher.tools.cache.data.MorphGenderDto
+import ru.shuvaev.morpher.tools.cache.data.MorphNameDto
 import ru.shuvaev.morpher.tools.cache.data.MorphologyDto
 import ru.shuvaev.morpher.tools.enams.Case
 import ru.shuvaev.morpher.tools.enams.Gender
@@ -60,5 +62,48 @@ internal object MorpherW3 : MorpherType {
             println(e)
         }
         return word
+    }
+
+    override fun morphFirstName(
+        firstName: String,
+        case: Case,
+        gender: Gender,
+        numeration: Numeration
+    ): String {
+        try {
+            var result = SqlLiteCache.getMorphedFirstName(firstName)?.getMorph(case, gender, numeration)
+            if (result != null) {
+                return result
+            }
+            result = RUSSIAN_CLIENT.declension(firstName, DeclensionFlag.Name, genderToDeclarationFlag(gender)).let {
+                MorphNameDto.fromWs3Morpher(it, gender)?.let {
+                    SqlLiteCache.saveMorphedFirstName(it)
+                }
+            }?.getMorph(case, gender, numeration)
+            if (result != null) {
+                return result
+            }
+            return firstName
+        } catch (e: Exception) {
+            println(e)
+        }
+        return firstName
+    }
+
+    override fun morphLastName(
+        lastName: String,
+        case: Case,
+        gender: Gender,
+        numeration: Numeration
+    ): String {
+        return morphFirstName(lastName, case, gender, numeration)
+    }
+
+    private fun genderToDeclarationFlag(gender: Gender): DeclensionFlag {
+        return when (gender) {
+            Gender.FEMALE -> DeclensionFlag.Feminine
+            Gender.MALE -> DeclensionFlag.Masculine
+            Gender.MEDIUM -> DeclensionFlag.Neuter
+        }
     }
 }

@@ -3,6 +3,7 @@ package ru.shuvaev.morpher.tools.cache.data
 import ru.morpher.ws3.russian.DeclensionResult
 import ru.shuvaev.morpher.tools.enams.Case
 import ru.shuvaev.morpher.tools.enams.Numeration
+import java.sql.ResultSet
 
 data class MorphologyDto(
     val nominativus: String,
@@ -20,7 +21,7 @@ data class MorphologyDto(
 ) {
     companion object {
         @JvmStatic
-        fun fromWs3Morpher(data: DeclensionResult?): MorphologyDto? {
+        internal fun fromWs3Morpher(data: DeclensionResult?): MorphologyDto? {
             if (data == null) return null
 
             return MorphologyDto(
@@ -32,6 +33,24 @@ data class MorphologyDto(
                 data.plural?.accusative ?: data.accusative,
                 data.plural?.instrumental ?: data.instrumental,
                 data.plural?.prepositional ?: data.prepositional,
+            )
+        }
+
+        @JvmStatic
+        internal fun createFromResultSet(rs: ResultSet): MorphologyDto {
+            return MorphologyDto(
+                rs.getString("nominativus"),
+                rs.getString("genitivus"),
+                rs.getString("dativus"),
+                rs.getString("accusativus"),
+                rs.getString("instrumentalis"),
+                rs.getString("praepositionalis"),
+                rs.getString("plural_nominativus"),
+                rs.getString("plural_genitivus"),
+                rs.getString("plural_dativus"),
+                rs.getString("plural_accusativus"),
+                rs.getString("plural_instrumentalis"),
+                rs.getString("plural_praepositionalistext")
             )
         }
     }

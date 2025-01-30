@@ -5,6 +5,7 @@ import ru.shuvaev.morpher.tools.cache.data.MorphologyDto
 
 fun main() {
     val client = ru.morpher.ws3.ClientBuilder().build()
+    SqlLiteCache.getMorphedNoun("гипер")
     var result = client.russian().declension("гипер")
     MorphologyDto.fromWs3Morpher(result)?.let {
         SqlLiteCache.saveMorphedNoun(it)

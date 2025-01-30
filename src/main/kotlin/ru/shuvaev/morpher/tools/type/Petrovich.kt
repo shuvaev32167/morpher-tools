@@ -2,13 +2,84 @@ package ru.shuvaev.morpher.tools.type
 
 import com.github.petrovich4j.NameType
 import com.github.petrovich4j.Petrovich
+import ru.shuvaev.morpher.tools.cache.SqlLiteCache
 import ru.shuvaev.morpher.tools.enams.Case
 import ru.shuvaev.morpher.tools.enams.Gender
 import ru.shuvaev.morpher.tools.enams.Numeration
+import java.util.*
 
 internal object Petrovich : MorpherType {
     @JvmStatic
     private val PETROVICH: Petrovich = Petrovich()
+
+    @JvmStatic
+    private val PERSONAL_PRONOUNS = mapOf(
+        "я" to mapOf(
+            Case.NOMINATIVUS to "я",
+            Case.GENITIVUS to "меня",
+            Case.DATIVUS to "мне",
+            Case.ACCUSATIVUS to "меня",
+            Case.INSTRUMENTALIS to "мной",
+            Case.PRAEPOSITIONALIS to "мне"
+        ),
+        "мы" to mapOf(
+            Case.NOMINATIVUS to "мы",
+            Case.GENITIVUS to "нас",
+            Case.DATIVUS to "нам",
+            Case.ACCUSATIVUS to "нас",
+            Case.INSTRUMENTALIS to "нами",
+            Case.PRAEPOSITIONALIS to "нас"
+        ),
+        "ты" to mapOf(
+            Case.NOMINATIVUS to "ты",
+            Case.GENITIVUS to "тебя",
+            Case.DATIVUS to "тебе",
+            Case.ACCUSATIVUS to "тебя",
+            Case.INSTRUMENTALIS to "тобой",
+            Case.PRAEPOSITIONALIS to "тебе"
+        ),
+        "вы" to mapOf(
+            Case.NOMINATIVUS to "вы",
+            Case.GENITIVUS to "вас",
+            Case.DATIVUS to "вам",
+            Case.ACCUSATIVUS to "вас",
+            Case.INSTRUMENTALIS to "вами",
+            Case.PRAEPOSITIONALIS to "вас"
+        ),
+        "он" to mapOf(
+            Case.NOMINATIVUS to "он",
+            Case.GENITIVUS to "его",
+            Case.DATIVUS to "ему",
+            Case.ACCUSATIVUS to "его",
+            Case.INSTRUMENTALIS to "им",
+            Case.PRAEPOSITIONALIS to "нём"
+        ),
+        "она" to mapOf(
+            Case.NOMINATIVUS to "она",
+            Case.GENITIVUS to "её",
+            Case.DATIVUS to "ей",
+            Case.ACCUSATIVUS to "её",
+            Case.INSTRUMENTALIS to "ею",
+            Case.PRAEPOSITIONALIS to "ней"
+        ),
+        "оно" to mapOf(
+            Case.NOMINATIVUS to "оно",
+            Case.GENITIVUS to "его",
+            Case.DATIVUS to "ему",
+            Case.ACCUSATIVUS to "его",
+            Case.INSTRUMENTALIS to "им",
+            Case.PRAEPOSITIONALIS to "нём"
+        ),
+        "они" to mapOf(
+            Case.NOMINATIVUS to "они",
+            Case.GENITIVUS to "их",
+            Case.DATIVUS to "им",
+            Case.ACCUSATIVUS to "их",
+            Case.INSTRUMENTALIS to "ими",
+            Case.PRAEPOSITIONALIS to "них"
+        )
+    )
+
     override fun morphNoun(
         word: String,
         gender: Gender,
@@ -29,6 +100,21 @@ internal object Petrovich : MorpherType {
         if (case == Case.NOMINATIVUS) {
             return firstName
         }
+
+        SqlLiteCache.getMorphedFirstName(firstName)?.getMorph(case, gender, numeration)?.let { return it }
+
+        val needCapit = firstName[0].isUpperCase()
+        firstName.lowercase().let {
+            if (PERSONAL_PRONOUNS.containsKey(it)) {
+                val result = PERSONAL_PRONOUNS[firstName.lowercase()]!![case]!!
+                return if (needCapit) {
+                    result.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                } else {
+                    result
+                }
+            }
+        }
+
         return PETROVICH.say(firstName, NameType.FirstName, convertGender(gender), convertCase(case))
     }
 
@@ -41,6 +127,9 @@ internal object Petrovich : MorpherType {
         if (case == Case.NOMINATIVUS) {
             return lastName
         }
+
+        SqlLiteCache.getMorphedLastName(lastName)?.getMorph(case, gender, numeration)?.let { return it }
+
         return PETROVICH.say(lastName, NameType.LastName, convertGender(gender), convertCase(case))
     }
 

@@ -91,5 +91,4 @@ interface MorpherType {
             else -> surname // По умолчанию фамилия остается неизменной
         }
     }
-
 }

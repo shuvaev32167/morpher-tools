@@ -1,6 +1,7 @@
 package ru.shuvaev.morpher.tools.cache
 
 import ru.shuvaev.morpher.tools.cache.data.MorphGenderDto
+import ru.shuvaev.morpher.tools.cache.data.MorphNameDto
 import ru.shuvaev.morpher.tools.cache.data.MorphologyDto
 import java.sql.Connection
 import java.sql.DriverManager
@@ -13,20 +14,7 @@ internal object SqlLiteCache : Cache {
             return baseDbAction { statement ->
                 val rs = statement.executeQuery("select * from noun where nominativus='${word}';")
                 return@baseDbAction if (rs.next()) {
-                    MorphologyDto(
-                        rs.getString("nominativus"),
-                        rs.getString("genitivus"),
-                        rs.getString("dativus"),
-                        rs.getString("accusativus"),
-                        rs.getString("instrumentalis"),
-                        rs.getString("praepositionalis"),
-                        rs.getString("plural_nominativus"),
-                        rs.getString("plural_genitivus"),
-                        rs.getString("plural_dativus"),
-                        rs.getString("plural_accusativus"),
-                        rs.getString("plural_instrumentalis"),
-                        rs.getString("plural_praepositionalistext")
-                    )
+                    MorphologyDto.createFromResultSet(rs)
                 } else {
                     null
                 }
@@ -67,12 +55,7 @@ internal object SqlLiteCache : Cache {
                             "or neuter='${word}';"
                 )
                 return@baseDbAction if (rs.next()) {
-                    MorphGenderDto(
-                        rs.getString("masculine"),
-                        rs.getString("feminine"),
-                        rs.getString("neuter"),
-                        rs.getString("plural")
-                    )
+                    MorphGenderDto.createFromResultSet(rs)
                 } else {
                     null
                 }
@@ -89,6 +72,128 @@ internal object SqlLiteCache : Cache {
                 it.executeUpdate(
                     "insert into adjective_genders (masculine, feminine, neuter, plural) " +
                             "values ('${data.masculine}', '${data.feminine}', '${data.neuter}', '${data.plural}') " +
+                            "on conflict do nothing;"
+                )
+                return@baseDbAction data
+            } ?: data
+        } catch (e: Exception) {
+            println(e)
+        }
+        return data
+    }
+
+    override fun getMorphedFirstName(word: String): MorphNameDto? {
+        try {
+            return baseDbAction {
+                val rs = it.executeQuery(
+                    "select * from first_name where masc_nominativus='${word}' or fem_nominativus='${word}' " +
+                            "or plural_nominativus='${word}';"
+                )
+                return@baseDbAction if (rs.next()) {
+                    MorphNameDto.createFromResultSet(rs)
+                } else {
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            println(e)
+        }
+        return null
+    }
+
+    override fun saveMorphedFirstName(data: MorphNameDto): MorphNameDto {
+        try {
+            return baseDbAction {
+                it.executeUpdate(
+                    "insert into first_name (" +
+                            "masc_nominativus, masc_genitivus, masc_dativus, masc_accusativus, masc_instrumentalis, masc_praepositionalis, " +
+                            "fem_nominativus, fem_genitivus, fem_dativus, fem_accusativus, fem_instrumentalis, fem_praepositionalis, " +
+                            "plural_nominativus, plural_genitivus, plural_dativus, plural_accusativus, plural_instrumentalis, plural_praepositionalis) " +
+                            "values (" +
+                            "${stringOrNull(data.mascNominativus)},${stringOrNull(data.mascGenitivus)},${
+                                stringOrNull(
+                                    data.mascDativus
+                                )
+                            },${stringOrNull(data.mascAccusativus)},${stringOrNull(data.mascInstrumentalis)},${
+                                stringOrNull(
+                                    data.mascPraepositionalis
+                                )
+                            }," +
+                            "${stringOrNull(data.femNominativus)},${stringOrNull(data.femGenitivus)},${stringOrNull(data.femDativus)},${
+                                stringOrNull(
+                                    data.femAccusativus
+                                )
+                            },${stringOrNull(data.femInstrumentalis)},${stringOrNull(data.femPraepositionalis)}," +
+                            "${stringOrNull(data.pluralNominativus)},${stringOrNull(data.pluralGenitivus)},${
+                                stringOrNull(
+                                    data.pluralDativus
+                                )
+                            },${stringOrNull(data.pluralAccusativus)},${stringOrNull(data.pluralInstrumentalis)},${
+                                stringOrNull(
+                                    data.pluralPraepositionalis
+                                )
+                            }) " +
+                            "on conflict do nothing;"
+                )
+                return@baseDbAction data
+            } ?: data
+        } catch (e: Exception) {
+            println(e)
+        }
+        return data
+    }
+
+    override fun getMorphedLastName(word: String): MorphNameDto? {
+        try {
+            return baseDbAction {
+                val rs = it.executeQuery(
+                    "select * from last_name where masc_nominativus='${word}' or fem_nominativus='${word}' " +
+                            "or plural_nominativus='${word}';"
+                )
+                return@baseDbAction if (rs.next()) {
+                    MorphNameDto.createFromResultSet(rs)
+                } else {
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            println(e)
+        }
+        return null
+    }
+
+    override fun saveMorphedLastName(data: MorphNameDto): MorphNameDto {
+        try {
+            return baseDbAction {
+                it.executeUpdate(
+                    "insert into last_name (" +
+                            "masc_nominativus, masc_genitivus, masc_dativus, masc_accusativus, masc_instrumentalis, masc_praepositionalis, " +
+                            "fem_nominativus, fem_genitivus, fem_dativus, fem_accusativus, fem_instrumentalis, fem_praepositionalis, " +
+                            "plural_nominativus, plural_genitivus, plural_dativus, plural_accusativus, plural_instrumentalis, plural_praepositionalis) " +
+                            "values (" +
+                            "${stringOrNull(data.mascNominativus)},${stringOrNull(data.mascGenitivus)},${
+                                stringOrNull(
+                                    data.mascDativus
+                                )
+                            },${stringOrNull(data.mascAccusativus)},${stringOrNull(data.mascInstrumentalis)},${
+                                stringOrNull(
+                                    data.mascPraepositionalis
+                                )
+                            }," +
+                            "${stringOrNull(data.femNominativus)},${stringOrNull(data.femGenitivus)},${stringOrNull(data.femDativus)},${
+                                stringOrNull(
+                                    data.femAccusativus
+                                )
+                            },${stringOrNull(data.femInstrumentalis)},${stringOrNull(data.femPraepositionalis)}," +
+                            "${stringOrNull(data.pluralNominativus)},${stringOrNull(data.pluralGenitivus)},${
+                                stringOrNull(
+                                    data.pluralDativus
+                                )
+                            },${stringOrNull(data.pluralAccusativus)},${stringOrNull(data.pluralInstrumentalis)},${
+                                stringOrNull(
+                                    data.pluralPraepositionalis
+                                )
+                            }) " +
                             "on conflict do nothing;"
                 )
                 return@baseDbAction data
@@ -125,6 +230,50 @@ internal object SqlLiteCache : Cache {
                     "plural text, " +
                     "unique(feminine), " +
                     "unique(neuter));"
+        )
+
+        statement.executeUpdate(
+            "create table if not exists first_name(" +
+                    "masc_nominativus text unique," +
+                    "masc_genitivus text," +
+                    "masc_dativus text," +
+                    "masc_accusativus text," +
+                    "masc_instrumentalis text," +
+                    "masc_praepositionalis text," +
+                    "fem_nominativus text unique," +
+                    "fem_genitivus text," +
+                    "fem_dativus text," +
+                    "fem_accusativus text," +
+                    "fem_instrumentalis text," +
+                    "fem_praepositionalis text," +
+                    "plural_nominativus text," +
+                    "plural_genitivus text," +
+                    "plural_dativus text," +
+                    "plural_accusativus text," +
+                    "plural_instrumentalis text," +
+                    "plural_praepositionalis text);"
+        )
+
+        statement.executeUpdate(
+            "create table if not exists last_name(" +
+                    "masc_nominativus text unique," +
+                    "masc_genitivus text," +
+                    "masc_dativus text," +
+                    "masc_accusativus text," +
+                    "masc_instrumentalis text," +
+                    "masc_praepositionalis text," +
+                    "fem_nominativus text unique," +
+                    "fem_genitivus text," +
+                    "fem_dativus text," +
+                    "fem_accusativus text," +
+                    "fem_instrumentalis text," +
+                    "fem_praepositionalis text," +
+                    "plural_nominativus text," +
+                    "plural_genitivus text," +
+                    "plural_dativus text," +
+                    "plural_accusativus text," +
+                    "plural_instrumentalis text," +
+                    "plural_praepositionalis text);"
         )
     }
 
