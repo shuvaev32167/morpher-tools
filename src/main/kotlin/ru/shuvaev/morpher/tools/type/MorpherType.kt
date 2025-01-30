@@ -39,4 +39,33 @@ interface MorpherType {
     fun morphGender(word: String, gender: Gender, numeration: Numeration): String
     fun morphGender(word: String, gender: Gender): String =
         morphGender(word = word, gender = gender, numeration = Numeration.SINGLE)
+
+    fun convertSurnameToFemale(surname: String): String {
+        val parts = surname.split("-") // Проверка на двойные фамилии
+        val convertedParts = parts.map { processSingleSurname(it) }
+        return convertedParts.joinToString("-") // Объединяем обратно
+    }
+
+    private fun processSingleSurname(surname: String): String {
+        return when {
+            // Фамилии на "-ов", "-ев", "-ин", "-ын" → добавляем "-а"
+            surname.matches(Regex(".*(ов|ев|ин|ын)$")) -> surname + "а"
+
+            // Фамилии на "-ский", "-цкий", "-чий", "-ой", "-ый" → заменяем на "-ая"
+            surname.endsWith("ский") || surname.endsWith("цкий") || surname.endsWith("чий")
+                    || surname.endsWith("ой") || surname.endsWith("ый") || surname.endsWith("ай") -> surname.dropLast(2) + "ая"
+
+            // Фамилии на "-арь" → заменяем на "-арова" (Гончар → Гончарова)
+            surname.endsWith("арь") -> surname + "ова"
+
+            // Фамилии на "-ец" → заменяем на "-ецкая" (Князец → Князецкая)
+            surname.endsWith("ец") -> surname + "кая"
+
+            // Фамилии на "-эй", "-ий" → заменяем на "-эя", "-ия"
+            surname.endsWith("эй") || surname.endsWith("ий") -> surname.dropLast(1) + "я"
+
+            else -> surname // По умолчанию фамилия остается неизменной
+        }
+    }
+
 }
