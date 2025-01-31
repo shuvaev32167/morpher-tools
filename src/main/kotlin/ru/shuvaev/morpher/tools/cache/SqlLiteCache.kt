@@ -47,23 +47,26 @@ internal object SqlLiteCache : Cache {
         return data
     }
 
-    override fun getMorphedGender(word: String): MorphGenderDto? {
+    override fun getMorphedGender(word: String): List<MorphGenderDto> {
         try {
             return baseDbAction {
                 val rs = it.executeQuery(
                     "select * from adjective_genders where masculine='${word}' or feminine='${word}' " +
-                            "or neuter='${word}';"
+                            "or neuter='${word}' or plural='$word';"
                 )
-                return@baseDbAction if (rs.next()) {
-                    MorphGenderDto.createFromResultSet(rs)
-                } else {
-                    null
+
+                val result = mutableListOf<MorphGenderDto>()
+
+                while (rs.next()) {
+                    result.add(MorphGenderDto.createFromResultSet(rs))
                 }
-            }
+
+                return@baseDbAction result
+            } ?: emptyList<MorphGenderDto>()
         } catch (e: Exception) {
             println(e)
         }
-        return null
+        return emptyList<MorphGenderDto>()
     }
 
     override fun saveMorphedGender(data: MorphGenderDto): MorphGenderDto {

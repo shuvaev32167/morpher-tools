@@ -8,7 +8,7 @@ interface Cache {
     fun getMorphedNoun(word: String): MorphologyDto?
     fun saveMorphedNoun(data: MorphologyDto): MorphologyDto
 
-    fun getMorphedGender(word: String): MorphGenderDto?
+    fun getMorphedGender(word: String): List<MorphGenderDto>
     fun saveMorphedGender(data: MorphGenderDto): MorphGenderDto
 
     fun getMorphedFirstName(word: String): MorphNameDto?

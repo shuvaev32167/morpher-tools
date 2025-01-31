@@ -45,7 +45,16 @@ internal object MorpherW3 : MorpherType {
         numeration: Numeration
     ): String {
         try {
-            var result = SqlLiteCache.getMorphedGender(word)?.getMorph(gender, numeration)
+            var result: String? = null
+            val foundedMorphed = SqlLiteCache.getMorphedGender(word)
+            if (foundedMorphed.isNotEmpty()) {
+                result = if (foundedMorphed.size == 1) {
+                    foundedMorphed.first().getMorph(gender, numeration)
+                } else {
+                    foundedMorphed.find { it.masculine == word || it.feminine == word || it.neuter == word }
+                        ?.getMorph(gender, numeration)
+                }
+            }
             if (result != null) {
                 return result
             }
