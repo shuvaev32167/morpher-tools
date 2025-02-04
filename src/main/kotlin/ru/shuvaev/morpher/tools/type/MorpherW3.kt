@@ -20,7 +20,16 @@ internal object MorpherW3 : MorpherType {
         autoGender: Boolean
     ): String {
         try {
-            var result = SqlLiteCache.getMorphedNoun(word)?.getMorph(case, numeration)
+            var result: String? = null
+            val foundedMorphed = SqlLiteCache.getMorphedNoun(word)
+            if (foundedMorphed.isNotEmpty()) {
+                result = if (foundedMorphed.size == 1) {
+                    foundedMorphed.first().getMorph(case, numeration)
+                } else {
+                    foundedMorphed.find { it.nominativus == word }
+                        ?.getMorph(case, numeration)
+                }
+            }
             if (result != null) {
                 return result
             }

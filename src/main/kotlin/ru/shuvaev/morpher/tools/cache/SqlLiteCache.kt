@@ -9,20 +9,24 @@ import java.sql.Statement
 
 
 internal object SqlLiteCache : Cache {
-    override fun getMorphedNoun(word: String): MorphologyDto? {
+    override fun getMorphedNoun(word: String): List<MorphologyDto> {
         try {
             return baseDbAction { statement ->
-                val rs = statement.executeQuery("select * from noun where nominativus='${word}';")
-                return@baseDbAction if (rs.next()) {
-                    MorphologyDto.createFromResultSet(rs)
-                } else {
-                    null
+                val rs =
+                    statement.executeQuery("select * from noun where nominativus='${word}' or plural_nominativus='${word}';")
+
+                val result = mutableListOf<MorphologyDto>()
+
+                while (rs.next()) {
+                    result.add(MorphologyDto.createFromResultSet(rs))
                 }
-            }
+
+                return@baseDbAction result
+            } ?: emptyList<MorphologyDto>()
         } catch (e: Exception) {
             println(e)
         }
-        return null
+        return emptyList<MorphologyDto>()
     }
 
     override fun saveMorphedNoun(data: MorphologyDto): MorphologyDto {
@@ -231,7 +235,6 @@ internal object SqlLiteCache : Cache {
                     "feminine text, " +
                     "neuter text," +
                     "plural text, " +
-                    "unique(feminine), " +
                     "unique(neuter));"
         )
 

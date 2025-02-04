@@ -5,7 +5,7 @@ import ru.shuvaev.morpher.tools.cache.data.MorphNameDto
 import ru.shuvaev.morpher.tools.cache.data.MorphologyDto
 
 interface Cache {
-    fun getMorphedNoun(word: String): MorphologyDto?
+    fun getMorphedNoun(word: String): List<MorphologyDto>
     fun saveMorphedNoun(data: MorphologyDto): MorphologyDto
 
     fun getMorphedGender(word: String): List<MorphGenderDto>
