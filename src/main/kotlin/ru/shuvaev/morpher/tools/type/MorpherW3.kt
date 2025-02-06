@@ -26,8 +26,8 @@ internal object MorpherW3 : MorpherType {
                 result = if (foundedMorphed.size == 1) {
                     foundedMorphed.first().getMorph(case, numeration)
                 } else {
-                    foundedMorphed.find { it.nominativus == word }
-                        ?.getMorph(case, numeration)
+                    (foundedMorphed.find { it.nominativus == word } ?: foundedMorphed.first())
+                        .getMorph(case, numeration)
                 }
             }
             if (result != null) {
@@ -60,8 +60,9 @@ internal object MorpherW3 : MorpherType {
                 result = if (foundedMorphed.size == 1) {
                     foundedMorphed.first().getMorph(gender, numeration)
                 } else {
-                    foundedMorphed.find { it.masculine == word || it.feminine == word || it.neuter == word }
-                        ?.getMorph(gender, numeration)
+                    (foundedMorphed.find { it.masculine == word || it.feminine == word || it.neuter == word }
+                        ?: foundedMorphed.first())
+                        .getMorph(gender, numeration)
                 }
             }
             if (result != null) {
