@@ -1,6 +1,7 @@
 package ru.shuvaev.morpher.tools.type
 
-import ru.morpher.ws3.russian.DeclensionFlag
+import com.github.shuvaev32167.morpher.ws3.client.ClientBuilder
+import com.github.shuvaev32167.morpher.ws3.client.russian.DeclensionFlag
 import ru.shuvaev.morpher.tools.cache.SqlLiteCache
 import ru.shuvaev.morpher.tools.cache.data.MorphGenderDto
 import ru.shuvaev.morpher.tools.cache.data.MorphNameDto
@@ -11,7 +12,7 @@ import ru.shuvaev.morpher.tools.enams.Numeration
 
 internal object MorpherW3 : MorpherType {
     @JvmStatic
-    private val RUSSIAN_CLIENT = ru.morpher.ws3.ClientBuilder().build().russian()
+    private val RUSSIAN_CLIENT = ClientBuilder().build().russian()
     override fun morphNoun(
         word: String,
         gender: Gender,

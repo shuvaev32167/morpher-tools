@@ -136,4 +136,54 @@ interface MorpherType {
             morphNoun(noun, Case.GENITIVUS)
         }
     }
+
+    /**
+     * Приведение причастий к каткой форме
+     *
+     * @param participle причастие в полной форме
+     * @param gender пол
+     * @param numeration число
+     * @return причастие в краткой форме
+     */
+    fun participleToShortForm(
+        participle: String,
+        gender: Gender = Gender.MALE,
+        numeration: Numeration = Numeration.SINGLE
+    ): String? {
+        return when {
+            participle.endsWith("нный") -> {
+                val base = participle.dropLast(3)  // Удаляем "ный"
+                getShortForm(base, gender, numeration)
+            }
+
+            participle.endsWith("ый") -> {
+                val base = participle.dropLast(2)  // Удаляем "ый"
+                getShortForm(base, gender, numeration)
+            }
+
+            else -> null
+        }
+    }
+
+    private fun getShortForm(
+        base: String,
+        gender: Gender,
+        numeration: Numeration,
+        suffixChar: Char = '\u0000',
+        additionalSuffix: String = ""
+    ): String {
+        val suffix = when {
+            Numeration.PLURAL == numeration -> "ы"
+            Gender.FEMALE == gender -> "а"
+            Gender.MEDIUM == gender -> "о"
+            else -> ""
+        }
+
+        return buildString {
+            append(base)
+            if (suffixChar != '\u0000') append(suffixChar)
+            append(additionalSuffix)
+            append(suffix)
+        }
+    }
 }

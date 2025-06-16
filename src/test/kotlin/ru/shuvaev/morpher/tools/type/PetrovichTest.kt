@@ -1,10 +1,8 @@
 package ru.shuvaev.morpher.tools.type
 
+import com.github.shuvaev32167.morpher.ws3.client.ClientBuilder
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import ru.morpher.ws3.ClientBuilder
-import ru.shuvaev.morpher.tools.cache.SqlLiteCache
 import ru.shuvaev.morpher.tools.enams.Case
 import ru.shuvaev.morpher.tools.enams.Gender
 import ru.shuvaev.morpher.tools.enams.Numeration
@@ -32,11 +30,11 @@ class PetrovichTest {
     }
 
     @Test
-    @Disabled
+//    @Disabled
     fun morpherClient() {
         val client = ClientBuilder().build()
         val russian = client.russian()
-        SqlLiteCache.getMorphedNoun("гипер")
+//        SqlLiteCache.getMorphedNoun("гипер")
         var result = russian.declension("гипер")
         println(result)
     }

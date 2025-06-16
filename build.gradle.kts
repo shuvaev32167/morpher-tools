@@ -1,6 +1,7 @@
 plugins {
     java
-    kotlin("jvm") version "2.1.10"
+    idea
+    kotlin("jvm") version "2.1.21"
     `java-library`
      `maven-publish`
     id("org.gradlex.extra-java-module-info") version "1.9"
@@ -10,14 +11,20 @@ plugins {
 group = "ru.shuvaev.morpher"
 version = "1.0-SNAPSHOT"
 
+idea {
+    module {
+        isDownloadJavadoc = true
+        isDownloadSources = true
+    }
+}
+
 repositories {
     mavenCentral()
     mavenLocal()
+    google()
     maven("https://jitpack.io")
     maven("https://raw.github.com/morpher-ru/morpher-ws3-java-client/mvn-repo")
 }
-
-
 
 publishing {
     publications {
@@ -29,6 +36,8 @@ publishing {
 
 java{
     withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 dependencies {
@@ -42,7 +51,9 @@ dependencies {
     implementation(libs.jackson.core)
     implementation("commons-codec:commons-codec:1.18.0")
 
-    implementation("org.xerial:sqlite-jdbc:3.48.0.0")
+    implementation(libs.sqlite.jdbc)
+
+    implementation("com.github.shuvaev32167:morpher-ws3-client:1.0-SNAPSHOT")
 
 
 //    implementation(libs.aot)
@@ -51,6 +62,19 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.compileJava {
+    options.encoding = "UTF-8"
+}
+
+tasks.compileKotlin{
+    destinationDirectory = tasks.compileJava.get().destinationDirectory
+}
+
+tasks.compileTestJava {
+    options.encoding = "UTF-8"
+}
+
 kotlin {
     jvmToolchain(17)
 }
@@ -60,13 +84,6 @@ application {
     mainClass = "ru.shuvaev.morpher.tools.MainKt"
 }
 
-tasks.compileJava {
-    options.encoding = "UTF-8"
-}
-
-tasks.compileTestJava {
-    options.encoding = "UTF-8"
-}
 
 extraJavaModuleInfo {
     module("com.github.petrovich4j:petrovich4j", "petrovich4j"){

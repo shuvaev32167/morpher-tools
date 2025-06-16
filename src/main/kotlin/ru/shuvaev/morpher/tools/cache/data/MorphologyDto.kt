@@ -1,6 +1,6 @@
 package ru.shuvaev.morpher.tools.cache.data
 
-import ru.morpher.ws3.russian.DeclensionResult
+import com.github.shuvaev32167.morpher.ws3.client.russian.DeclensionResult
 import ru.shuvaev.morpher.tools.enams.Case
 import ru.shuvaev.morpher.tools.enams.Numeration
 import java.sql.ResultSet
@@ -25,8 +25,8 @@ data class MorphologyDto(
             if (data == null) return null
 
             return MorphologyDto(
-                data.nominative, data.genitive, data.dative, data.accusative, data.instrumental,
-                data.prepositional,
+                data.nominative!!, data.genitive!!, data.dative!!, data.accusative!!, data.instrumental!!,
+                data.prepositional!!,
                 data.plural?.nominative ?: data.nominative,
                 data.plural?.genitive ?: data.genitive,
                 data.plural?.dative ?: data.dative,

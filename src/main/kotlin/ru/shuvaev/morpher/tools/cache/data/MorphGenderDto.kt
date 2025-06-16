@@ -1,6 +1,6 @@
 package ru.shuvaev.morpher.tools.cache.data
 
-import ru.morpher.ws3.russian.AdjectiveGendersResult
+import com.github.shuvaev32167.morpher.ws3.client.russian.AdjectiveGendersResult
 import ru.shuvaev.morpher.tools.enams.Gender
 import ru.shuvaev.morpher.tools.enams.Numeration
 import java.sql.ResultSet
@@ -11,7 +11,7 @@ data class MorphGenderDto(val masculine: String, val feminine: String, val neute
         internal fun fromWs3Morpher(masculine: String, data: AdjectiveGendersResult?): MorphGenderDto? {
             if (data == null) return null
 
-            return MorphGenderDto(masculine, data.feminine, data.neuter, data.plural)
+            return MorphGenderDto(masculine, data.feminine!!, data.neuter!!, data.plural!!)
         }
 
         @JvmStatic

@@ -281,6 +281,19 @@ internal object SqlLiteCache : Cache {
                     "plural_instrumentalis text," +
                     "plural_praepositionalis text);"
         )
+
+        statement.executeUpdate(
+            "create table if not exists participle(" +
+                    "id integer primary key," +
+                    "full_masculine text," +
+                    "full_feminine text," +
+                    "full_neuter text," +
+                    "full_plural text," +
+                    "short_masculine text," +
+                    "short_feminine text," +
+                    "short_neuter text," +
+                    "short_plural text);"
+        )
     }
 
     @JvmStatic
