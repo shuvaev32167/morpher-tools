@@ -1,6 +1,6 @@
 package ru.shuvaev.morpher.tools.cache.data
 
-import com.github.shuvaev32167.morpher.ws3.client.russian.AdjectiveGendersResult
+import ru.morpher.ws3.russian.AdjectiveGendersResult
 import ru.shuvaev.morpher.tools.enams.Gender
 import ru.shuvaev.morpher.tools.enams.Numeration
 import java.sql.ResultSet

@@ -1,7 +1,7 @@
 package ru.shuvaev.morpher.tools.type
 
-import com.github.shuvaev32167.morpher.ws3.client.ClientBuilder
-import com.github.shuvaev32167.morpher.ws3.client.russian.DeclensionFlag
+import ru.morpher.ws3.ClientBuilder
+import ru.morpher.ws3.russian.DeclensionFlag
 import ru.shuvaev.morpher.tools.cache.SqlLiteCache
 import ru.shuvaev.morpher.tools.cache.data.MorphGenderDto
 import ru.shuvaev.morpher.tools.cache.data.MorphNameDto

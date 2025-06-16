@@ -1,6 +1,6 @@
 package ru.shuvaev.morpher.tools
 
-import com.github.shuvaev32167.morpher.ws3.client.ClientBuilder
+import ru.morpher.ws3.ClientBuilder
 import ru.shuvaev.morpher.tools.cache.SqlLiteCache
 import ru.shuvaev.morpher.tools.cache.data.MorphologyDto
 

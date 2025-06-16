@@ -53,7 +53,7 @@ dependencies {
 
     implementation(libs.sqlite.jdbc)
 
-    implementation("com.github.shuvaev32167:morpher-ws3-client:1.0-SNAPSHOT")
+//    implementation("com.github.shuvaev32167:morpher-ws3-client:1.0-SNAPSHOT")
 
 
 //    implementation(libs.aot)

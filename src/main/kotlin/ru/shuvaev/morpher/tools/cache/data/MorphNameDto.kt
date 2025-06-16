@@ -1,6 +1,6 @@
 package ru.shuvaev.morpher.tools.cache.data
 
-import com.github.shuvaev32167.morpher.ws3.client.russian.DeclensionResult
+import ru.morpher.ws3.russian.DeclensionResult
 import ru.shuvaev.morpher.tools.enams.Case
 import ru.shuvaev.morpher.tools.enams.Gender
 import ru.shuvaev.morpher.tools.enams.Numeration
