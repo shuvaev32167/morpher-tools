@@ -161,7 +161,7 @@ interface MorpherType {
                 getShortForm(base, gender, numeration)
             }
 
-            else -> null
+            else -> participle
         }
     }
 
