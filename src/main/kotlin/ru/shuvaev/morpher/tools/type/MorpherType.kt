@@ -210,4 +210,111 @@ interface MorpherType {
             append(suffix)
         }
     }
+
+    /**
+     * Определения рода и числа существительного [noun]
+     *
+     * @param noun существительное, для которых надо определить род и число
+     * @return Пара {Пол [Gender], Число [Numeration]}
+     */
+    fun determineGenderAndNumber(noun: String): Pair<Gender, Numeration> {
+        val word = noun.trim().lowercase()
+
+        // Списки исключений
+        val masculineExceptions = setOf(
+            "папа", "дедушка", "дядя", "кофе", "рояль", "тюль", "шампунь", "толь", "портье"
+        )
+
+        val feminineExceptions = setOf(
+            "мать", "дочь", "ночь", "любовь", "болезнь", "жизнь", "тетрадь", "площадь", "степь"
+        )
+
+        val neuterExceptions = setOf(
+            "время", "имя", "пламя", "знамя", "темя", "семя", "стремя", "бремя"
+        )
+
+        val pluraliaTantum = setOf(
+            "ножницы", "брюки", "очки", "часы", "деньги", "ворота", "каникулы", "шахматы", "духи"
+        )
+
+        val singulariaTantum = setOf(
+            "молоко", "золото", "серебро", "счастье", "любовь", "нефть", "молодёжь", "листва", "мебель"
+        )
+
+        // Проверка на исключения (множественное число)
+        if (pluraliaTantum.contains(word)) {
+            return Pair(Gender.MALE, Numeration.PLURAL)
+        }
+
+        // Проверка на исключения (единственное число)
+        if (singulariaTantum.contains(word)) {
+            return Pair(determineGender(word), Numeration.SINGLE)
+        }
+
+        // Определение числа по окончанию
+        val number = determineNumber(word)
+
+        // Определение рода (с учетом числа)
+        val gender = when {
+            masculineExceptions.contains(word) -> Gender.MALE
+            feminineExceptions.contains(word) -> Gender.FEMALE
+            neuterExceptions.contains(word) -> Gender.MEDIUM
+            number == Numeration.PLURAL -> determineGenderForPlural(word)
+            else -> determineGenderForSingular(word)
+        }
+
+        return Pair(gender, number)
+    }
+
+    private fun determineNumber(word: String): Numeration {
+        return when {
+            word.endsWith("ы") || word.endsWith("и") -> Numeration.PLURAL
+            word.endsWith("а") || word.endsWith("я") -> {
+                if (word.endsWith("ня") || word.endsWith("та") || word.endsWith("ья")) Numeration.PLURAL
+                else Numeration.SINGLE
+            }
+
+            word.endsWith("о") || word.endsWith("е") || word.endsWith("э") -> Numeration.SINGLE
+            else -> Numeration.SINGLE
+        }
+    }
+
+    private fun determineGenderForSingular(word: String): Gender {
+        return when {
+            word.endsWith("ж") || word.endsWith("ш") || word.endsWith("ч") || word.endsWith("щ") -> Gender.MALE
+            word.endsWith("й") || word.endsWith("ь") -> {
+                if (word.endsWith("чь") || word.endsWith("шь") || word.endsWith("щь") || word.endsWith("жь")) Gender.MALE
+                else Gender.FEMALE
+            }
+
+            word.endsWith("а") || word.endsWith("я") -> Gender.FEMALE
+            word.endsWith("о") || word.endsWith("е") || word.endsWith("э") -> Gender.MEDIUM
+            word.endsWith("мя") -> Gender.MEDIUM
+            else -> Gender.MALE
+        }
+    }
+
+    private fun determineGenderForPlural(word: String): Gender {
+        // Для множественного числа род определяется по форме единственного числа
+        val singularForm = when {
+            word.endsWith("ы") -> word.dropLast(1) + "а"
+            word.endsWith("и") -> {
+                when {
+                    word.endsWith("нии") -> word.dropLast(3) + "ие"
+                    word.endsWith("ки") -> word.dropLast(2) + "ка"
+                    else -> word.dropLast(1) + "ь"
+                }
+            }
+
+            word.endsWith("а") -> word.dropLast(1) + "о"
+            word.endsWith("я") -> word.dropLast(1) + "е"
+            else -> word
+        }
+
+        return determineGenderForSingular(singularForm)
+    }
+
+    private fun determineGender(word: String): Gender {
+        return determineGenderAndNumber(word).first
+    }
 }
