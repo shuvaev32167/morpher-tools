@@ -138,6 +138,30 @@ interface MorpherType {
     }
 
     /**
+     * Преобразование счётного существительного ддя характеристик
+     *
+     * @param count числительное, соединённое со счётным существительным [noun]
+     * @param noun счётное числительное, соединённое с числительным [count]
+     * @return преобразованное счётное числительное [noun], в соответствии с
+     *    числительным [count]
+     */
+    fun morphCountableNounParam(count: Number, noun: String): String {
+        val countDouble = count.toDouble()
+        return if (abs(countDouble) % 1.0 < 1e-10) {
+            val countLong = count.toLong()
+            val n = abs(countLong) // Обрабатываем отрицательные числа
+            val mod10: Short = (n % 10).toShort()
+            if (mod10 == 1.toShort()) {
+                noun
+            } else {
+                morphNoun(noun, Case.GENITIVUS)
+            }
+        } else {
+            morphNoun(noun, Case.GENITIVUS)
+        }
+    }
+
+    /**
      * Приведение причастий к каткой форме
      *
      * @param participle причастие в полной форме
